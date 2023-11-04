@@ -7,6 +7,23 @@ struct process {
     int burstTime;
 };
 
+void swap(struct process *a, struct process *b) {
+    struct process temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Function to sort the priority queue in ascending order based on priority
+void sortQueue(struct process queue[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - i - 1; j++) {
+            if (queue[j].priority > queue[j + 1].priority) {
+                swap(&queue[j], &queue[j + 1]);
+            }
+        }
+    }
+}
+
 int main() {
     struct process highPriorityQueue[100];
     struct process mediumPriorityQueue[100];
@@ -42,14 +59,12 @@ int main() {
             lowPrioritySize++;
         }
     }
+    sortQueue(mediumPriorityQueue, mediumPrioritySize);
 
-    int quantumRR = 4;
-    int quantumPS = 10;
-    int quantumFCFS = 10;
-
-    // High Priority Queue (Round Robin)
+    // High Priority Queue (Round Robin) with quantum time
     printf("High Priority Queue (Round Robin):\n");
     int highPriorityCompleted = 0;
+    int quantumRR = 4;
     while (highPriorityCompleted < highPrioritySize) {
         for (int i = 0; i < highPrioritySize; i++) {
             struct process *p = &highPriorityQueue[i];
@@ -63,63 +78,26 @@ int main() {
                 } else {
                     p->burstTime = 0;
                     printf("Process ID: %d, Burst Time (after): %d\n", p->id, p->burstTime);
-                }
-
-                if (p->burstTime == 0) {
                     highPriorityCompleted++;
                 }
             }
         }
     }
 
-    // Medium Priority Queue (Priority Scheduling)
+    // Medium Priority Queue (Priority Scheduling) without quantum time
     printf("Medium Priority Queue (Priority Scheduling):\n");
-    int mediumPriorityCompleted = 0;
-    while (mediumPriorityCompleted < mediumPrioritySize) {
-        for (int i = 0; i < mediumPrioritySize; i++) {
-            struct process *p = &mediumPriorityQueue[i];
+    for (int i = 0; i < mediumPrioritySize; i++) {
+        struct process *p = &mediumPriorityQueue[i];
 
-            if (p->burstTime > 0) {
-                printf("Process ID: %d, Burst Time (before): %d\n", p->id, p->burstTime);
-
-                if (p->burstTime > quantumPS) {
-                    p->burstTime -= quantumPS;
-                    printf("Subtracting %d from Process ID: %d, Burst Time (after): %d\n", quantumPS, p->id, p->burstTime);
-                } else {
-                    p->burstTime = 0;
-                    printf("Process ID: %d, Burst Time (after): %d\n", p->id, p->burstTime);
-                }
-
-                if (p->burstTime == 0) {
-                    mediumPriorityCompleted++;
-                }
-            }
-        }
+        printf("Process ID: %d, Burst Time: %d\n", p->id, p->burstTime);
     }
 
-    // Low Priority Queue (First Come First Serve)
+    // Low Priority Queue (First Come First Serve) without quantum time
     printf("Low Priority Queue (First Come First Serve):\n");
-    int lowPriorityCompleted = 0;
-    while (lowPriorityCompleted < lowPrioritySize) {
-        for (int i = 0; i < lowPrioritySize; i++) {
-            struct process *p = &lowPriorityQueue[i];
+    for (int i = 0; i < lowPrioritySize; i++) {
+        struct process *p = &lowPriorityQueue[i];
 
-            if (p->burstTime > 0) {
-                printf("Process ID: %d, Burst Time (before): %d\n", p->id, p->burstTime);
-
-                if (p->burstTime > quantumFCFS) {
-                    p->burstTime -= quantumFCFS;
-                    printf("Subtracting %d from Process ID: %d, Burst Time (after): %d\n", quantumFCFS, p->id, p->burstTime);
-                } else {
-                    p->burstTime = 0;
-                    printf("Process ID: %d, Burst Time (after): %d\n", p->id, p->burstTime);
-                }
-
-                if (p->burstTime == 0) {
-                    lowPriorityCompleted++;
-                }
-            }
-        }
+        printf("Process ID: %d, Burst Time: %d\n", p->id, p->burstTime);
     }
 
     return 0;
